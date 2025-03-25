@@ -16,11 +16,15 @@ func main() {
 	r.Use(middleware.Logger)
 
 	utils.InitEnv()
-	botToken, err := utils.GetEnvWrapper("TOKEN")
+	botToken, err := utils.GetEnvWrapper("BOT_TOKEN")
 	if err != nil {
 		log.Fatal(err)
 	}
-	mattermostURL, err := utils.GetEnvWrapper("URL")
+	botPort, err := utils.GetEnvWrapper("BOT_PORT")
+	if err != nil {
+		log.Fatal(err)
+	}
+	mattermostURL, err := utils.GetEnvWrapper("MM_URL")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,5 +37,5 @@ func main() {
 		w.Write([]byte(resp))
 	})
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":"+botPort, r)
 }

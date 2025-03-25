@@ -46,14 +46,24 @@ docker compose -f docker-compose.yml -f docker-compose.without-nginx.yml down
 
 #### 3. Create .env file
 
-...
+From the root folder:
+
+```bash
+touch .env
+```
+
+Add this fields to `.env` file:
+
+- `BOT_TOKEN`: Bot token from Mattermost
+- `BOT_PORT`: port to run Bot on
+- `MM_URL`: Mattermost url
 
 #### 4. Build and run poll-bot
 
-From root folder:
+From the root folder:
 
 ```bash
-cd poll-bot/cmd/poll_bot
+cd poll_bot
 go mod tidy
 go run .
 ```
