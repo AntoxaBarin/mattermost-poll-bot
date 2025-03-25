@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	envPath = "../../.env"
+	envPath = "../.env"
 )
 
 func InitEnv() {
