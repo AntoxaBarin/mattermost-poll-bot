@@ -1,8 +1,8 @@
 # mattermost-poll-bot
 
-# Build
+## Build
 
-### 1. Fetch git submodules:
+#### 1. Fetch git submodules:
 
 In the root folder run this command:
 
@@ -10,7 +10,7 @@ In the root folder run this command:
 git submodule update --init --recursive
 ```
 
-### 2. Run mattermost with docker
+#### 2. Run mattermost with docker
 
 ```bash
 cd docker
