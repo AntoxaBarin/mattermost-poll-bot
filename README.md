@@ -52,7 +52,7 @@ From the root folder:
 touch .env
 ```
 
-Add this fields to `.env` file:
+Add these fields to `.env` file:
 
 - `BOT_TOKEN`: Bot token from Mattermost
 - `BOT_PORT`: port to run Bot on
