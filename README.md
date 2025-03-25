@@ -43,3 +43,19 @@ To shutdown deployment run this command (in `docker` folder):
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.without-nginx.yml down
 ```
+
+#### 3. Create .env file
+
+...
+
+#### 4. Build and run poll-bot
+
+From root folder:
+
+```bash
+cd poll-bot/cmd/poll_bot
+go mod tidy
+go run .
+```
+
+
