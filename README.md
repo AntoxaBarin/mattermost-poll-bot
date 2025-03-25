@@ -21,7 +21,9 @@ Create config:
 cp env.example .env
 ```
 
-Edit `.env`: change `DOMAIN` field value to: 127.0.0.1
+Edit `.env`: 
+- `DOMAIN`: 127.0.0.1 
+- `MATTERMOST_IMAGE_TAG`: latest
 
 Then create required directories and set permissions:
 
@@ -46,13 +48,7 @@ docker compose -f docker-compose.yml -f docker-compose.without-nginx.yml down
 
 #### 3. Create .env file
 
-From the root folder:
-
-```bash
-touch .env
-```
-
-Add these fields to `.env` file:
+Create `.env` file in the root directory and add these variables:
 
 - `BOT_TOKEN`: Bot token from Mattermost
 - `BOT_PORT`: port to run Bot on
@@ -67,5 +63,3 @@ cd poll_bot
 go mod tidy
 go run .
 ```
-
-

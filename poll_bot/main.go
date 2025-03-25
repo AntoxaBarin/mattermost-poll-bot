@@ -1,41 +1,45 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 
-	"poll_bot/internal/hadlers"
 	"poll_bot/internal/utils"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/mattermost/mattermost/server/public/model"
 )
 
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	utils.InitEnv()
-	botToken, err := utils.GetEnvWrapper("BOT_TOKEN")
-	if err != nil {
-		log.Fatal(err)
-	}
-	botPort, err := utils.GetEnvWrapper("BOT_PORT")
-	if err != nil {
-		log.Fatal(err)
-	}
-	mattermostURL, err := utils.GetEnvWrapper("MM_URL")
-	if err != nil {
-		log.Fatal(err)
-	}
+	cfg := utils.CreateConfig()
+	mmClient := model.NewAPIv4Client(cfg.URL)
+	mmClient.SetToken(cfg.BotToken)
 
-	r.Get("/users", func(w http.ResponseWriter, r *http.Request) {
-		resp, err := hadlers.SendAuthorizedRequest(mattermostURL, "/users", botToken)
+	var perPage int = 10
+	var page int
+	for {
+		users, _, err := mmClient.GetUsers(context.TODO(), page, perPage, "")
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("error fetching users: %v", err)
+			return
 		}
-		w.Write([]byte(resp))
-	})
 
-	http.ListenAndServe(":"+botPort, r)
+		for _, u := range users {
+			fmt.Printf("%s\n", u.Username)
+		}
+
+		if len(users) < perPage {
+			break
+		}
+
+		page++
+	}
+
+	http.ListenAndServe(":"+cfg.BotPort, r)
 }
