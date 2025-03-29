@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"net/http"
 
+	"poll_bot/internal/handlers"
 	"poll_bot/internal/utils"
 
 	"github.com/go-chi/chi/v5"
@@ -17,29 +16,17 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	cfg := utils.CreateConfig()
-	mmClient := model.NewAPIv4Client(cfg.URL)
-	mmClient.SetToken(cfg.BotToken)
+	app := utils.CreateApp()
+	app.MMClient = model.NewAPIv4Client(app.Config.URL.String())
+	app.MMClient.SetToken(app.Config.BotToken)
 
-	var perPage int = 10
-	var page int
-	for {
-		users, _, err := mmClient.GetUsers(context.TODO(), page, perPage, "")
-		if err != nil {
-			log.Printf("error fetching users: %v", err)
-			return
-		}
-
-		for _, u := range users {
-			fmt.Printf("%s\n", u.Username)
-		}
-
-		if len(users) < perPage {
-			break
-		}
-
-		page++
+	if user, _, err := app.MMClient.GetUser(context.TODO(), "me", ""); err != nil {
+		log.Fatal("[Error]: Failed to login bot into Mattermost")
+	} else {
+		log.Println("[Info]: Successfully logged into Mattermost")
+		app.MMUser = user
+		log.Printf("[Info]: User info. FirstName: %s, email: %s", user.FirstName, user.Email)
 	}
 
-	http.ListenAndServe(":"+cfg.BotPort, r)
+	handlers.ListenToEvents(app)
 }

@@ -52,7 +52,7 @@ Create `.env` file in the root directory and add these variables:
 
 - `BOT_TOKEN`: Bot token from Mattermost
 - `BOT_PORT`: port to run Bot on
-- `MM_URL`: Mattermost url
+- `MM_URL`: Mattermost server URL
 
 #### 4. Build and run poll-bot
 

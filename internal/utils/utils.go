@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"errors"
+	"fmt"
 	"log"
+	"net/url"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -12,7 +13,11 @@ const (
 	envPath = "../.env"
 )
 
-func CreateConfig() *Config {
+func CreateApp() *App {
+	return &App{Config: *createConfig()}
+}
+
+func createConfig() *Config {
 	if err := godotenv.Load(envPath); err != nil {
 		log.Print("No .env file found")
 	}
@@ -27,7 +32,11 @@ func CreateConfig() *Config {
 		log.Fatal(err)
 	}
 
-	mmURL, err := GetEnvWrapper("MM_URL")
+	stringURL, err := GetEnvWrapper("MM_URL")
+	if err != nil {
+		log.Fatal(err)
+	}
+	mmURL, err := url.Parse(stringURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,7 +51,7 @@ func CreateConfig() *Config {
 func GetEnvWrapper(key string) (string, error) {
 	value, ok := os.LookupEnv(key)
 	if !ok {
-		return "", errors.New("Failed to get TOKEN env variable.")
+		return "", fmt.Errorf("failed to get %s env variable", key)
 	}
 	return value, nil
 }
