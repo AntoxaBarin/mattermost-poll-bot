@@ -100,7 +100,7 @@ func handlePost(app *utils.App, post *model.Post) {
 		log.Printf("[Info]: Creating new poll: %s\n", post.Message)
 		poll, err := createPoll(app, post)
 		if err != nil {
-			log.Printf("[Warning]: Failed to create poll: %s. Error: %s\n", post.Message, err)
+			log.Printf("[Warning]: Failed to create poll: %s. Error: %s\n", post.Message, err.Error())
 			sendMsgToChannel(app, "Failed to create poll. Try again later.", post.ChannelId, post.RootId)
 			return
 		}
@@ -109,24 +109,43 @@ func handlePost(app *utils.App, post *model.Post) {
 		for k := range poll.Options {
 			options = append(options, k)
 		}
-
 		msg := fmt.Sprintf("New poll: %s. ID: %d.\nOptions:\n%s", poll.Title, poll.ID, strings.Join(options, "\n")+"\n")
 		sendMsgToChannel(app, msg, post.ChannelId, post.RootId)
+
 	} else if strings.HasPrefix(post.Message, "_vote") {
 		log.Printf("[Info]: Handle vote from user with ID %s: %s\n", post.UserId, post.Message)
 		err := vote(app, post)
 		if err != nil {
 			log.Printf("[Warning]: Failed to vote: %s. Error: %s\n", post.Message, err)
-			sendMsgToChannel(app, "Failed to vote. Try again later.", post.ChannelId, post.RootId)
+			msg := ""
+			if strings.HasPrefix(err.Error(), "bad vote request") {
+				msg = "Bad vote request. Usage: _vote <poll ID> <option>."
+			} else if strings.HasPrefix(err.Error(), "invalid poll ID") {
+				msg = "Invalid poll ID."
+			} else if strings.HasPrefix(err.Error(), "failed to find poll") {
+				msg = "Unknown poll ID."
+			} else if strings.HasPrefix(err.Error(), "invalid option") {
+				msg = "Unknown poll option."
+			} else if strings.HasPrefix(err.Error(), "user") {
+				msg = "User already voted in this poll"
+			}
+			sendMsgToChannel(app, msg, post.ChannelId, post.RootId)
 			return
 		}
 		sendMsgToChannel(app, fmt.Sprintf("User with ID %s successfully voted", post.UserId), post.ChannelId, post.RootId)
+
 	} else if strings.HasPrefix(post.Message, "_poll_res") {
 		log.Printf("[Info]: Handle poll results from user with ID %s: %s\n", post.UserId, post.Message)
 		poll, err := getPollResults(app, post.Message)
 		if err != nil {
 			log.Printf("[Warning]: Failed to get poll results: %s. Error: %s\n", post.Message, err)
-			sendMsgToChannel(app, "Failed to get poll results. Try again later.", post.ChannelId, post.RootId)
+			msg := ""
+			if strings.HasPrefix(err.Error(), "invalid poll ID") {
+				msg = "Invalid poll ID."
+			} else if strings.HasPrefix(err.Error(), "failed to find poll") {
+				msg = "Unknown poll ID."
+			}
+			sendMsgToChannel(app, msg, post.ChannelId, post.RootId)
 			return
 		}
 		msg := fmt.Sprintf("Poll ID: %d results:\n", poll.ID)
@@ -134,6 +153,7 @@ func handlePost(app *utils.App, post *model.Post) {
 			msg += fmt.Sprintf("%s: %d\n", k, len(v))
 		}
 		sendMsgToChannel(app, msg, post.ChannelId, post.RootId)
+
 	} else if strings.HasPrefix(post.Message, "_cancel_poll") {
 		log.Printf("[Info]: Handle poll calcellation from user with ID %s: %s\n", post.UserId, post.Message)
 		poll, err := cancelPoll(app, post)

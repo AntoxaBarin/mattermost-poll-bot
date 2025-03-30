@@ -87,6 +87,9 @@ func Select(config *utils.Config, ID uint32) (Poll, error) {
 	if err != nil {
 		log.Printf("[Tarantool]: Failed to Select: %s", err.Error())
 		return Poll{}, fmt.Errorf("[Tarantool]: failed to Select")
+	} else if len(polls) == 0 {
+		log.Printf("[Tarantool]: No poll with ID: %d", ID)
+		return Poll{}, fmt.Errorf("[Tarantool]: No poll with ID: %d", ID)
 	}
 	return polls[0], nil
 }
