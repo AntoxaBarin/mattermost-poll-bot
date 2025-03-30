@@ -101,7 +101,7 @@ func handlePost(app *utils.App, post *model.Post) {
 		poll, err := createPoll(app, post)
 		if err != nil {
 			log.Printf("[Warning]: Failed to create poll: %s. Error: %s\n", post.Message, err.Error())
-			sendMsgToChannel(app, "Failed to create poll. Try again later.", post.ChannelId, post.RootId)
+			sendMsgToChannel(app, "Bad request to create a poll. Usage:  _new_poll <title>, <option 1>, <option 2>, ..., <option N>", post.ChannelId, post.RootId)
 			return
 		}
 		log.Printf("[Info]: Poll (%s) successfully created\n", poll.Title)
@@ -159,7 +159,19 @@ func handlePost(app *utils.App, post *model.Post) {
 		poll, err := cancelPoll(app, post)
 		if err != nil {
 			log.Printf("[Warning]: Failed to cancel poll: %s. Error: %s\n", post.Message, err)
-			sendMsgToChannel(app, "Failed to cancel poll. Try again later.", post.ChannelId, post.RootId)
+			msg := ""
+			if strings.HasPrefix(err.Error(), "bad _cancel_poll request") {
+				msg = "Bad _cancel_poll request. Usage: _cancel_poll <poll ID>."
+			} else if strings.HasPrefix(err.Error(), "invalid poll ID") {
+				msg = "Invalid poll ID."
+			} else if strings.HasPrefix(err.Error(), "failed to find poll") {
+				msg = "Unknown poll ID."
+			} else if strings.HasPrefix(err.Error(), "only creator can cancel poll") {
+				msg = "Only creator can cancel poll."
+			} else {
+				msg = "Failed to cancel poll. Try again later."
+			}
+			sendMsgToChannel(app, msg, post.ChannelId, post.RootId)
 			return
 		}
 		sendMsgToChannel(app, fmt.Sprintf("Poll ID: %d successfully canceled.", poll.ID), post.ChannelId, post.RootId)
@@ -196,7 +208,7 @@ func createPoll(app *utils.App, post *model.Post) (tt.Poll, error) {
 	}
 	insertResult := tt.Insert(&app.Config, &poll)
 	if !insertResult {
-		return tt.Poll{}, fmt.Errorf("failed to insert Poll into Tarantool DB")
+		return tt.Poll{}, fmt.Errorf("failed to insert poll into Tarantool DB")
 	}
 	return poll, nil
 }
