@@ -1,5 +1,21 @@
 # mattermost-poll-bot
 
+## Bot commands
+
+```bash
+# Create new poll
+_new_poll <title>, <option 1>, <option 2>, ..., <option N>
+
+# Cancel poll (poll creator's feature)
+_cancel_poll <poll ID>
+
+# Vote in poll
+_vote <poll ID> <option>
+
+# Get poll results
+_poll_res <poll ID>
+```
+
 ## Build
 
 #### 1. Fetch git submodules:
@@ -21,7 +37,7 @@ Create config:
 cp env.example .env
 ```
 
-Edit `.env`: 
+Edit `docker/.env`: 
 - `DOMAIN`: 127.0.0.1 
 - `MATTERMOST_IMAGE_TAG`: latest
 
@@ -53,6 +69,8 @@ Create `.env` file in the root directory and add these variables:
 - `BOT_TOKEN`: Bot token from Mattermost
 - `BOT_PORT`: port to run Bot on
 - `MM_URL`: Mattermost server URL
+- `DB_HOST`: [Tarantool](https://tarantool.io) server host
+- `DB_PORT`: Tarantool server port
 
 #### 4. Build and run poll-bot
 

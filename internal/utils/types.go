@@ -10,7 +10,8 @@ type Config struct {
 	URL      *url.URL
 	BotToken string
 	BotPort  string
-	Channel  string
+	DBHost   string
+	DBPort   string
 }
 
 type App struct {

@@ -41,10 +41,21 @@ func createConfig() *Config {
 		log.Fatal(err)
 	}
 
+	dbHost, err := GetEnvWrapper("DB_HOST")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dbPort, err := GetEnvWrapper("DB_PORT")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return &Config{
 		URL:      mmURL,
 		BotToken: botToken,
 		BotPort:  botPort,
+		DBHost:   dbHost,
+		DBPort:   dbPort,
 	}
 }
 
