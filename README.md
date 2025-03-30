@@ -16,6 +16,8 @@ _vote <poll ID> <option>
 _poll_res <poll ID>
 ```
 
+![](./images/bot_usage_example.png)
+
 ## Build
 
 #### 1. Fetch git submodules:
@@ -61,6 +63,8 @@ To shutdown deployment run this command (in `docker` folder):
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.without-nginx.yml down
 ```
+
+[Create bot](https://developers.mattermost.com/integrate/reference/bot-accounts/), copy it's token.
 
 #### 3. Run bot and Tarantool
 
