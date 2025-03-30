@@ -62,7 +62,15 @@ To shutdown deployment run this command (in `docker` folder):
 docker compose -f docker-compose.yml -f docker-compose.without-nginx.yml down
 ```
 
-#### 3. Create .env file
+#### 3. Run bot and Tarantool
+
+In the root folder:
+
+```bash
+docker-compose up --build
+```
+
+#### Manual build
 
 Create `.env` file in the root directory and add these variables:
 
@@ -72,12 +80,13 @@ Create `.env` file in the root directory and add these variables:
 - `DB_HOST`: [Tarantool](https://tarantool.io) server host
 - `DB_PORT`: Tarantool server port
 
-#### 4. Build and run poll-bot
+#### Build and run poll-bot
 
 From the root folder:
 
 ```bash
 cd poll_bot
 go mod tidy
+cd src
 go run .
 ```
